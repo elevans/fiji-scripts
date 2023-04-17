@@ -8,7 +8,8 @@
 #@ Float riSample(label="Refractive Index (sample)", value=1.4)
 #@ Float xySpacing(label="XY Spacing (nm)", value=62.9)
 #@ Float zSpacing(label="Z Spacing (nm)", value=160)
-#@ Integer depth(value=0)
+#@ Float pZ(label="Particle/sample Position (um)", value=0)
+#@ Float regularizationFactor(label="Regularization factor", value=0.002)
 #@output ImgPlus psf
 #@output ImgPlus result
 
@@ -39,9 +40,9 @@ psf = ops.create().kernelDiffraction(
     riImmersion,
     lateral_res,
     axial_res,
-    depth, 
+    pZ,
     new FloatType()
     )
 
 // deconvolve image
-result = ops.deconvolve().richardsonLucyTV(img_f, psf, iterations, 0.002)
+result = ops.deconvolve().richardsonLucyTV(img_f, psf, iterations, regularizationFactor)

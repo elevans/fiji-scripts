@@ -2,13 +2,13 @@
 #@ OpService ops
 #@ UIService ui 
 #@ Integer iterations(label="Iterations", value=30)
-#@ Float numericalAperture(label="Numerical Aperture", value=1.4)
-#@ Integer wavelength(label="Wavelength (nm)", value=550)
+#@ Float numericalAperture(label="Numerical Aperture", value=1.45)
+#@ Integer wavelength(label="Emission Wavelength (nm)", value=550)
 #@ Float riImmersion(label="Refractive Index (immersion)", value=1.5)
 #@ Float riSample(label="Refractive Index (sample)", value=1.4)
-#@ Float xySpacing(label="XY Spacing (nm)", value=62.9)
-#@ Float zSpacing(label="Z Spacing (nm)", value=160)
-#@ Float pZ(label="Particle/sample Position (um)", value=0)
+#@ Float lateral_res(label="Lateral resolution (μm)", value=0.065)
+#@ Float axial_res(label="Axial resolution (μm)", value=0.1)
+#@ Float pZ(label="Particle/sample Position (μm)", value=0)
 #@ Float regularizationFactor(label="Regularization factor", value=0.002)
 #@output ImgPlus psf
 #@output ImgPlus result
@@ -30,8 +30,8 @@ for (dim in img.dimensionsAsLongArray()) {
 }
 psf_size = new FinalDimensions(psf_dims as long[])
 wv = wavelength * 1E-9
-lateral_res = xySpacing * 1E-9
-axial_res = zSpacing * 1E-9
+lateral_res = lateral_res * 1E-6
+axial_res = axial_res * 1E-6
 psf = ops.create().kernelDiffraction(
     psf_size,
     numericalAperture,

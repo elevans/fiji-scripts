@@ -1,8 +1,8 @@
 #@ OpService ops
 #@ UIService ui
 #@ ImgPlus img
-#@ Integer start_radius
-#@ Integer end_radius
+#@ Integer start_radius(label="Start radius:", value=0)
+#@ Integer end_radius(label="End radius:", value=0)
 #@output ImgPlus recon
 
 from net.imglib2.util import Util
@@ -32,8 +32,11 @@ def fft_high_pass_filter(fft_array, radius):
         dist_c = Util.distance(origin_c, cursor_pos)
         dist_d = Util.distance(origin_d, cursor_pos)
         
-        # remove high frequences
-        if (dist_a <= radius) or (dist_b <= radius) or (dist_c <= radius) or (dist_d <= radius):
+        # remove low frequences
+        if (dist_a <= radius) or \
+            (dist_b <= radius) or \
+            (dist_c <= radius) or \
+            (dist_d <= radius):
             fft_cursor.get().setZero()
 
 

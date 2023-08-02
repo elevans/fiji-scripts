@@ -1,4 +1,3 @@
-#@ UIService ui
 #@ OpService ops
 #@ ImgPlus(label="Input image", required=True) input_img
 #@ Double sigma(label="sigma:", value=1.0)

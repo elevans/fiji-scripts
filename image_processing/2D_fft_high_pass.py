@@ -2,6 +2,7 @@
 #@ OpService ops
 #@ UIService ui
 #@ Integer radius(label="Radius:", value=0)
+#@ Boolean show(label="Show FFT arrays", value=False)
 #@output ImgPlus recon
 
 from net.imglib2.img.display.imagej import ImageJFunctions
@@ -10,8 +11,9 @@ from net.imglib2.util import Util
 # run FFT on the input image
 fft_img = ops.filter().fft(img)
 
-# display the FFT array in a power spectrum
-ImageJFunctions.show(fft_img).setTitle("FFT power spectrum")
+if show:
+    # display the FFT array in a power spectrum
+    ImageJFunctions.show(fft_img).setTitle("FFT power spectrum")
 
 # get a cursor on the FFT array
 fft_cursor = fft_img.cursor()
@@ -44,8 +46,9 @@ while fft_cursor.hasNext():
         (dist_d <= radius):
         fft_cursor.get().setZero()
 
-# show FFT array after filter
-ImageJFunctions.show(fft_img).setTitle("fft after filter")
+if show:
+    # display the FFT array after remove low frequences
+    ImageJFunctions.show(fft_img).setTitle("FFT post filter")
 
 # reconstruct filtered image from FFT array and show
 recon = ops.create().img([img.dimension(0), img.dimension(1)])

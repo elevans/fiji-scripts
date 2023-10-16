@@ -17,7 +17,7 @@ import ij.IJ
 import net.imglib2.FinalDimensions
 import net.imglib2.type.numeric.real.FloatType
 
-//convert interger parameters to float
+// convert interger parameters to float
 wavelength = wavelength.toFloat()
 
 // convert input image to 32-bit
@@ -29,9 +29,13 @@ for (dim in img.dimensionsAsLongArray()) {
     psf_dims.add(dim)
 }
 psf_size = new FinalDimensions(psf_dims as long[])
+
+// convert the input parameters to meteres (m)
 wv = wavelength * 1E-9
 lateral_res = lateral_res * 1E-6
 axial_res = axial_res * 1E-6
+
+// create the synthetic PSF
 psf = ops.create().kernelDiffraction(
     psf_size,
     numericalAperture,

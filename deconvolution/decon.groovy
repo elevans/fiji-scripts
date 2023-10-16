@@ -34,6 +34,7 @@ psf_size = new FinalDimensions(psf_dims as long[])
 wv = wavelength * 1E-9
 lateral_res = lateral_res * 1E-6
 axial_res = axial_res * 1E-6
+pZ = pZ * 1E-6
 
 // create the synthetic PSF
 psf = ops.create().kernelDiffraction(

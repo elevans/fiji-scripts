@@ -23,7 +23,7 @@ wavelength = wavelength.toFloat()
 // convert input image to 32-bit
 img_f = ops.convert().float32(img)
 
-// generate synthetic psf based on input shape
+// get imglib2 dimensions from the input image
 psf_dims = []
 for (dim in img.dimensionsAsLongArray()) {
     psf_dims.add(dim)

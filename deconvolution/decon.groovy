@@ -1,6 +1,5 @@
 #@ ImgPlus img
 #@ OpService ops
-#@ UIService ui 
 #@ Integer iterations(label="Iterations", value=30)
 #@ Float numericalAperture(label="Numerical Aperture", value=1.45)
 #@ Integer wavelength(label="Emission Wavelength (nm)", value=550)

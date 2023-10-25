@@ -14,11 +14,11 @@ matrix_orientation = {
 }
 
 
-def run_asm_corr_diff(img):
+def run_corr_diff(img):
     # compute haralick correlation and difference (variance)
     corr = ops.haralick().correlation(img, grey_levels, dist, matrix_orientation.get(orientation))
     diff = ops.haralick().differenceVariance(img, grey_levels, dist, matrix_orientation.get(orientation))
     
     return [corr, diff]
 
-print(run_asm_corr_diff(img))
+print(run_corr_diff(img))

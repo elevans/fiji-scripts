@@ -5,9 +5,8 @@
 #@ Integer min_size(label="Minimum size (pixels):", min=0, value=0)
 #@ Integer max_size(label="Maximum size (pixels):", value=0)
 
-from net.imglib2.roi.labeling import ImgLabeling
+from net.imglib2.roi.labeling import ImgLabeling, LabelRegions
 from net.imglib2.roi import Regions
-from net.imglib2.roi.labeling import LabelRegions
 
 def remove_label(sample):
     """

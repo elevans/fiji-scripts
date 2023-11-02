@@ -1,8 +1,7 @@
-#@ ImgPlus img
 #@ OpService ops
-#@ UIService ui
-#@ Integer radius(label="Radius:", value=0)
-#@ Boolean show(label="Show FFT arrays", value=False)
+#@ ImgPlus img
+#@ Integer (label="Radius:", min=0, value=0) radius
+#@ Boolean (label="Show FFT arrays", value=False) show
 #@output ImgPlus recon
 
 from net.imglib2.img.display.imagej import ImageJFunctions
@@ -22,8 +21,6 @@ fft_cursor = fft_img.cursor()
 cursor_pos = [None, None]
 origin_a = [0, 0]
 origin_b = [0, fft_img.dimension(1)]
-origin_c = [fft_img.dimension(0), 0]
-origin_d = [fft_img.dimension(0), fft_img.dimension(1)]
 
 # loop through the FFT array
 while fft_cursor.hasNext():
@@ -36,14 +33,10 @@ while fft_cursor.hasNext():
     # calculate distance from origins
     dist_a = Util.distance(origin_a, cursor_pos)
     dist_b = Util.distance(origin_b, cursor_pos)
-    dist_c = Util.distance(origin_c, cursor_pos)
-    dist_d = Util.distance(origin_d, cursor_pos)
     
     # Remove high frequences
     if (dist_a > radius) and \
-        (dist_b > radius) and \
-        (dist_c > radius) and \
-        (dist_d > radius):
+        (dist_b > radius):
         fft_cursor.get().setZero()
 
 if show:

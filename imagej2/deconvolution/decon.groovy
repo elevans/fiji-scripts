@@ -1,14 +1,14 @@
 #@ ImgPlus img
 #@ OpService ops
 #@ Integer iterations(label="Iterations", value=30)
-#@ Float numericalAperture(label="Numerical Aperture", value=1.45)
+#@ Float numericalAperture(label="Numerical Aperture", style="format:0.00", min=0.00, value=1.45)
 #@ Integer wavelength(label="Emission Wavelength (nm)", value=550)
-#@ Float riImmersion(label="Refractive Index (immersion)", value=1.5)
-#@ Float riSample(label="Refractive Index (sample)", value=1.4)
-#@ Float lateral_res(label="Lateral resolution (μm/pixel)", value=0.065)
-#@ Float axial_res(label="Axial resolution (μm/pixel)", value=0.1)
-#@ Float pZ(label="Particle/sample Position (μm)", value=0)
-#@ Float regularizationFactor(label="Regularization factor", value=0.002)
+#@ Float riImmersion(label="Refractive Index (immersion)", style="format:0.00", min=0.00, value=1.5)
+#@ Float riSample(label="Refractive Index (sample)", style="format:0.00", min=0.00, value=1.4)
+#@ Float lateral_res(label="Lateral resolution (μm/pixel)", style="format:0.0000", min=0.0000, value=0.065)
+#@ Float axial_res(label="Axial resolution (μm/pixel)", style="format:0.0000", min=0.0000, value=0.1)
+#@ Float pZ(label="Particle/sample Position (μm)", style="format:0.0000", min=0.0000, value=0)
+#@ Float regularizationFactor(label="Regularization factor", style="format:0.00000", min=0.00000, value=0.002)
 #@output ImgPlus psf
 #@output ImgPlus result
 

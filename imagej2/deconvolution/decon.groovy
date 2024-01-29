@@ -23,14 +23,10 @@ wavelength = wavelength.toFloat()
 img_f = ops.convert().float32(img)
 
 // get imglib2 dimensions from the input image
-psf_dims = []
-for (dim in img.dimensionsAsLongArray()) {
-    psf_dims.add(dim)
-}
-psf_size = new FinalDimensions(psf_dims as long[])
+psf_size = new FinalDimensions(img.dimensionsAsLongArray())
 
 // convert the input parameters to meteres (m)
-wv = wavelength * 1E-9
+wavelength = wavelength * 1E-9
 lateral_res = lateral_res * 1E-6
 axial_res = axial_res * 1E-6
 pZ = pZ * 1E-6
@@ -39,7 +35,7 @@ pZ = pZ * 1E-6
 psf = ops.create().kernelDiffraction(
     psf_size,
     numericalAperture,
-    wv,
+    wavelength,
     riSample,
     riImmersion,
     lateral_res,

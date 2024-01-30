@@ -8,19 +8,21 @@ from net.imglib2.img.display.imagej import ImageJFunctions
 from net.imglib2.util import Util
 
 # run FFT on the input image
-fft_img = ops.filter().fft(img)
+fft_array = ops.filter().fft(img)
 
 if show:
     # display the FFT array in a power spectrum
-    ImageJFunctions.show(fft_img).setTitle("FFT power spectrum")
+    ImageJFunctions.show(fft_array).setTitle("FFT power spectrum")
 
 # get a cursor on the FFT array
-fft_cursor = fft_img.cursor()
+fft_cursor = fft_array.cursor()
 
 # note dimension order is X, Y or col, row
 cursor_pos = [None, None]
 origin_a = [0, 0]
-origin_b = [0, fft_img.dimension(1)]
+origin_b = [0, fft_array.dimension(1)]
+origin_c = [fft_array.dimension(0), 0]
+origin_d = [fft_array.dimension(0), fft_array.dimension(1)]
 
 # loop through the FFT array
 while fft_cursor.hasNext():
@@ -33,16 +35,20 @@ while fft_cursor.hasNext():
     # calculate distance from origins
     dist_a = Util.distance(origin_a, cursor_pos)
     dist_b = Util.distance(origin_b, cursor_pos)
+    dist_c = Util.distance(origin_c, cursor_pos)
+    dist_d = Util.distance(origin_d, cursor_pos)
     
-    # Remove high frequences
+     # Remove high frequences
     if (dist_a > radius) and \
-        (dist_b > radius):
+        (dist_b > radius) and \
+        (dist_c > radius) and \
+        (dist_d > radius):
         fft_cursor.get().setZero()
 
 if show:
     # display the FFT array after remove low frequences
-    ImageJFunctions.show(fft_img).setTitle("FFT post filter")
+    ImageJFunctions.show(fft_array).setTitle("FFT post filter")
 
 # reconstruct filtered image from FFT array and show
 recon = ops.create().img([img.dimension(0), img.dimension(1)])
-ops.filter().ifft(recon, fft_img)
+ops.filter().ifft(recon, fft_array)

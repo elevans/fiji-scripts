@@ -22,6 +22,8 @@ def fft_high_pass_filter(fft_array, radius):
     cursor_pos = [None, None]
     origin_a = [0, 0]
     origin_b = [0, fft_array.dimension(1)]
+    origin_c = [fft_array.dimension(0), 0]
+    origin_d = [fft_array.dimension(0), fft_array.dimension(1)]
 
     while fft_cursor.hasNext():
 
@@ -33,10 +35,14 @@ def fft_high_pass_filter(fft_array, radius):
         # calculate distance from origins
         dist_a = Util.distance(origin_a, cursor_pos)
         dist_b = Util.distance(origin_b, cursor_pos)
+        dist_c = Util.distance(origin_c, cursor_pos)
+        dist_d = Util.distance(origin_d, cursor_pos)
         
         # remove low frequences
         if (dist_a <= radius) or \
-            (dist_b <= radius):
+            (dist_b <= radius) or \
+            (dist_c <= radius) or \
+            (dist_d <= radius):
             fft_cursor.get().setZero()
 
 

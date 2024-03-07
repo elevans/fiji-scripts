@@ -1,6 +1,6 @@
 #@ ImgPlus img
 #@ OpService ops
-#@ Integer iterations(label="Iterations", value=30)
+#@ Integer iterations(label="Iterations", value=15)
 #@ Float numericalAperture(label="Numerical Aperture", style="format:0.00", min=0.00, value=1.45)
 #@ Integer wavelength(label="Emission Wavelength (nm)", value=550)
 #@ Float riImmersion(label="Refractive Index (immersion)", style="format:0.00", min=0.00, value=1.5)

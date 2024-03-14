@@ -1,3 +1,4 @@
+#@ OpEnvironment ops
 #@ ImgPlus img
 #@ Integer iterations(label="Iterations", value=30)
 #@ Float numericalAperture(label="Numerical Aperture", style="format:0.00", min=0.00, value=1.45)
@@ -11,12 +12,11 @@
 #@output ImgPlus psf
 #@output ImgPlus result
 
-from org.scijava.ops.api import OpEnvironment
+from java.lang import System
+
 from net.imglib2 import FinalDimensions
 from net.imglib2.type.numeric.real import FloatType
-
-# get ops environment
-ops = OpEnvironment.getEnvironment()
+from net.imglib2.type.numeric.complex import ComplexFloatType
 
 # convert input image to float
 img_float = ops.op("create.img").arity2().input(img, FloatType()).apply()
@@ -43,5 +43,7 @@ psf = ops.op("create.kernelDiffraction").arity9().input(psf_size,
                                                         FloatType()).apply()
 
 # deconvole image
-result = ops.op("create.img").arity2().input(img, FloatType()).apply()
-ops.op("deconvolve.richardsonLucyTV").arity4().input(img_float, psf, iterations, regularizationFactor).output(result).compute()
+i1 = System.currentTimeMillis()
+result = ops.op("deconvolve.richardsonLucyTV").arity8().input(img_float, psf, FloatType(), ComplexFloatType(), iterations, False, False, regularizationFactor).apply()
+i2 = System.currentTimeMillis()
+print("processing time: {}".format(i2 - i1))

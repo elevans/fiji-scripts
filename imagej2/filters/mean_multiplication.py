@@ -2,9 +2,8 @@
 #@ ImgPlus img
 #@ Long (label="Radius:", style="format:#", min=0, stepsize=1, value=0) radius
 #@ String (choices={"Diamond", "Hyper Sphere"}, style="listBox") shape
-#@output ImgPlus img_out
+#@output ImgPlus result
 
-from net.imglib2.algorithm.math import ImgMath
 from net.imglib2.algorithm.neighborhood import (DiamondShape,
                                                 HyperSphereShape)
 
@@ -22,5 +21,4 @@ img_m = ops.create().img(img)
 ops.filter().mean(img_m, img, shape_map.get(shape)(radius))
 
 # multiply mean image with input image
-img_out = ops.create().img(img)
-ImgMath.computeInto(ImgMath.mul(img, img_m), img_out)
+result = ops.math().multiply(img, img_m)

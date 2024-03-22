@@ -47,7 +47,7 @@ def run(image):
     input_image_id = WindowManager.getIDList()[0]
     WindowManager.getImage(input_image_id).close()
 
-	# apply image stabilization to open images (skip input image)
+    # apply image stabilization to open images (skip input image)
     open_chs = WindowManager.getIDList()
     chs_stab = []
     for i in range(len(open_chs)):

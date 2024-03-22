@@ -8,20 +8,20 @@ from net.imglib2.roi import Regions
 from net.imglib2.roi.labeling import ImgLabeling, LabelRegions
 from org.scijava.table import DefaultGenericTable
 
-def split_dataset(image, ch_axis):
+def split_dataset(image, axis=2):
     """
-    Create views along the channel axis for the given
+    Create views along the specified axis for the given
     Dataset.
 
     :param image: Input Dataset
-    :param ch_axis: Index of the channel axis (default=2)
-    :return: A list of Views along the channel axis
+    :param axis: Index of axis to slice (default=2)
+    :return: A list of Views along the axis
     """
-    chs = []
-    for i in range(image.dimensionsAsLongArray()[ch_axis]):
-        chs.append(ops.transform().hyperSliceView(image, ch_axis, i))
+    views = []
+    for i in range(image.dimensionsAsLongArray()[axis]):
+        views.append(ops.transform().hyperSliceView(image, axis, i))
     
-    return chs
+    return views
 
 
 def run(label_img, target_img):

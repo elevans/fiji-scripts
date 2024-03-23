@@ -5,8 +5,6 @@
 #@ Float (label="Template update coefficient:", style="format:0.00", value=0.90) update_coeff
 #@ Float (label="Error tolerance:", style="format:0.0000000", value=0.0000001) error_tol
 #@ Boolean (label="Log transform coefficients", value=False) log_transform
-#@ ImagePlus imp
-#@output ImagePlus result
 
 from ij import IJ, ImagePlus, WindowManager
 from ij.plugin import ChannelSplitter, RGBStackMerge
@@ -31,37 +29,56 @@ def image_stabilization(image):
     return image
 
 
-def run(image):
+def run():
     """
     Run multi-channel image stabilization.
 
     :param image: Input multi-channel ImagePlus
     :param return: Image stabilized multi-channel ImagePlus
     """
-    # split channels and show the images
-    chs = ChannelSplitter.split(image)
-    for ch in chs:
-        ch.show()
+    # initial images
+    init_image_ids = WindowManager.getIDList()
+    stablized_image_ids = []
 
-    # close the input image
-    input_image_id = WindowManager.getIDList()[0]
-    WindowManager.getImage(input_image_id).close()
+    for id in init_image_ids:
+        # get an open image
+        tmp_init_imp = WindowManager.getImage(id)
 
-    # apply image stabilization to open images (skip input image)
-    open_chs = WindowManager.getIDList()
-    chs_stab = []
-    for i in range(len(open_chs)):
-        tmp_imp = WindowManager.getImage(open_chs[i])
-        image_stabilization(tmp_imp)
-        chs_stab.append(tmp_imp)
+        # split channels and show the images
+        chs = ChannelSplitter.split(tmp_init_imp)
+        for ch in chs:
+            ch.show()
 
-    # stack images together (do not keep source images)
-    imp_stab = RGBStackMerge.mergeChannels(chs_stab, False)
+        # find the new split channel image IDs
+        tmp_working_ids = []
+        tmp_open_image_ids = WindowManager.getIDList()
+        for v in tmp_open_image_ids:
+            if v not in init_image_ids and v not in stablized_image_ids:
+                tmp_working_ids.append(v)
 
-    # close all images
-    IJ.run("Close All", "")
+        chs_stab = []
+        for i in range(len(tmp_working_ids)):
+            tmp_imp = WindowManager.getImage(tmp_working_ids[i])
+            image_stabilization(tmp_imp)
+            chs_stab.append(tmp_imp)
 
-    return imp_stab
+        # stack images together (do not keep source images)
+        imp_stab = RGBStackMerge.mergeChannels(chs_stab, False)
+        imp_stab.show()
+
+        # hide split channels
+        for v in tmp_working_ids:
+            WindowManager.getImage(v).hide()
+
+        # store new stabalized image id
+        tmp_open_image_ids = WindowManager.getIDList()
+        for v in tmp_open_image_ids:
+            if v not in init_image_ids and v not in stablized_image_ids:
+                stablized_image_ids.append(v)
+
+    # hide input images
+    for v in init_image_ids:
+        WindowManager.getImage(v).hide()
 
 # run the multi-channel image stabilization
-result = run(imp)
+run()

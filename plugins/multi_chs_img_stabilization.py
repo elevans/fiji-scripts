@@ -6,7 +6,7 @@
 #@ Float (label="Error tolerance:", style="format:0.0000000", value=0.0000001) error_tol
 #@ Boolean (label="Log transform coefficients", value=False) log_transform
 
-from ij import IJ, ImagePlus, WindowManager
+from ij import IJ, WindowManager
 from ij.plugin import ChannelSplitter, RGBStackMerge
 
 

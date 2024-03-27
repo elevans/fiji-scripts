@@ -13,7 +13,7 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('.'))
 
 
 # -- Project information -----------------------------------------------------
@@ -21,6 +21,14 @@ sys.path.insert(0, os.path.abspath('..'))
 project = 'Fiji Scripts'
 copyright = '2024, Edward Evans'
 author = 'Edward Evans'
+
+
+# -- Custom Lexers -----------------------------------------------------------
+
+from lexers import SciJavaGroovyLexer
+
+def setup(app):
+    app.add_lexer('scijava-groovy', SciJavaGroovyLexer)
 
 
 # -- General configuration ---------------------------------------------------

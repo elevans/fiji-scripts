@@ -6,8 +6,10 @@
 #@ String (label = "Channel B name", value = "b") ch_b_name
 #@ Integer (label = "Channel A position", value = 1) ch_a
 #@ Integer (label = "Channel B position", value = 2) ch_b
-#@ String (visibility = MESSAGE, value = "<b>Mesh settings</b>", required = false) mesh_msg
-#@output Object output
+#@ String (visibility = MESSAGE, value = "<b>Image calibration</b>", required = false) cal_msg
+#@ Float (label = "Pixel width (um)", style = "format:0.0000", value = 0.065) x_cal
+#@ Float (label = "Pixel height (um)", style = "format:0.0000", value = 0.065) y_cal
+#@ Float (label = "Voxel depth (um)", style = "format:0.0000", value = 0.1) z_cal
 
 from net.imglib2.algorithm.labeling.ConnectedComponents import StructuringElement
 from net.imglib2.algorithm.neighborhood import HyperSphereShape
@@ -19,6 +21,7 @@ from net.imglib2.type.numeric.real import FloatType
 from org.scijava.table import DefaultGenericTable
 
 from jarray import array
+
 
 def extract_channel(image, ch):
     """Extract a channel from the input image.
@@ -130,9 +133,8 @@ ch_b_mask = ops.op("morphology.open").input(ch_b_ths, HyperSphereShape(2), 4).ap
 ch_b_mask = ops.op("morphology.fillHoles").input(ch_b_mask, HyperSphereShape(2)).apply()
 
 # process the data
-output = extract_inside_mask(ch_a_mask, ch_b_mask)
-labeling = ops.op("labeling.cca").input(output, StructuringElement.EIGHT_CONNECTED).apply()
-meshes = create_meshes(mask, labeling)
+ch_ab_mask = extract_inside_mask(ch_a_mask, ch_b_mask)
+labeling = ops.op("labeling.cca").input(ch_ab_mask, StructuringElement.EIGHT_CONNECTED).apply()
 
 # create a table and make measurement
 table = DefaultGenericTable(3, 0)
@@ -145,16 +147,16 @@ i = 0
 for r in regs:
     # create meshes per region
     crop = ops.op("transform.intervalView").input(
-            output,
+            ch_ab_mask,
             r.minAsDoubleArray(),
             r.maxAsDoubleArray()
             ).apply()
     mesh = ops.op("geom.marchingCubes").input(crop).apply()
     table.appendRow()
-    table.set("{} size (pixels)".format(ch_a_name), i, ops.op("stats.size").input(Regions.sample(r, output)).apply())
-    # TODO add Img calibration
-    table.set("{} volume (um^3)".format(ch_a_name), i, ops.op("geom.size").input(mesh).apply())
+    table.set("{} size (pixels)".format(ch_a_name), i, ops.op("stats.size").input(Regions.sample(r, ch_ab_mask)).apply())
+    table.set("{} volume (um^3)".format(ch_a_name), i, ops.op("geom.size").input(mesh).apply().getRealFloat() * (x_cal * y_cal * z_cal))
     table.set("{} sphericity".format(ch_a_name), i, ops.op("geom.sphericity").input(mesh).apply())
     i += 1
 
-ur.show(table)
+ui.show(labeling.getIndexImg())
+ui.show(table)

@@ -52,6 +52,18 @@ def extract_inside_mask(mask_a, mask_b):
 
     Extract the mask "A" data from regions inside mask "B" using
     logical operations.
+
+    :param mask_a:
+
+        Input mask "A", data to extract.
+
+    :param mask_b:
+
+        Input mask "B", region to extract from.
+
+    :return:
+    
+        Mask with extracted "B" region with "A" data.
     """
     # create Img containers
     tmp = ops.op("create.img").input(mask_a, BitType()).apply()
@@ -132,31 +144,59 @@ ops.op("threshold.otsu").input(ch_b_img).output(ch_b_ths).compute()
 ch_b_mask = ops.op("morphology.open").input(ch_b_ths, HyperSphereShape(2), 4).apply()
 ch_b_mask = ops.op("morphology.fillHoles").input(ch_b_mask, HyperSphereShape(2)).apply()
 
-# process the data
+# extract mask "A" data from mask "B" region
 ch_ab_mask = extract_inside_mask(ch_a_mask, ch_b_mask)
-labeling = ops.op("labeling.cca").input(ch_ab_mask, StructuringElement.EIGHT_CONNECTED).apply()
+
+# create ImgLabelings from masks
+ab_labeling = ops.op("labeling.cca").input(ch_ab_mask, StructuringElement.EIGHT_CONNECTED).apply()
+b_labeling = ops.op("labeling.cca").input(ch_b_mask, StructuringElement.EIGHT_CONNECTED).apply()
 
 # create a table and make measurement
-table = DefaultGenericTable(3, 0)
-table.setColumnHeader(0, "{} size (pixels)".format(ch_a_name))
-table.setColumnHeader(1, "{} volume (um^3)".format(ch_a_name))
-table.setColumnHeader(2, "{} sphericity".format(ch_a_name))
-
-regs = LabelRegions(labeling)
+ab_table = DefaultGenericTable(3, 0)
+ab_table.setColumnHeader(0, "{} size (pixels)".format(ch_a_name))
+ab_table.setColumnHeader(1, "{} volume (um^3)".format(ch_a_name))
+ab_table.setColumnHeader(2, "{} sphericity".format(ch_a_name))
+ab_regs = LabelRegions(ab_labeling)
 i = 0
-for r in regs:
-    # create meshes per region
+for r in ab_regs:
+    # create a sample of mask "A" data in "B" region
+    sample = Regions.sample(r, ch_ab_mask)
+    # create a crop needed to create a mesh
     crop = ops.op("transform.intervalView").input(
             ch_ab_mask,
             r.minAsDoubleArray(),
             r.maxAsDoubleArray()
             ).apply()
     mesh = ops.op("geom.marchingCubes").input(crop).apply()
-    table.appendRow()
-    table.set("{} size (pixels)".format(ch_a_name), i, ops.op("stats.size").input(Regions.sample(r, ch_ab_mask)).apply())
-    table.set("{} volume (um^3)".format(ch_a_name), i, ops.op("geom.size").input(mesh).apply().getRealFloat() * (x_cal * y_cal * z_cal))
-    table.set("{} sphericity".format(ch_a_name), i, ops.op("geom.sphericity").input(mesh).apply())
+    ab_table.appendRow()
+    ab_table.set("{} size (pixels)".format(ch_a_name), i, ops.op("stats.size").input(sample).apply())
+    ab_table.set("{} volume (um^3)".format(ch_a_name), i, ops.op("geom.size").input(mesh).apply().getRealFloat() * (x_cal * y_cal * z_cal))
+    ab_table.set("{} sphericity".format(ch_a_name), i, ops.op("geom.sphericity").input(mesh).apply())
     i += 1
 
-ui.show(labeling.getIndexImg())
-ui.show(table)
+b_table = DefaultGenericTable(3, 0)
+b_table.setColumnHeader(0, "{} size (pixels)".format(ch_b_name))
+b_table.setColumnHeader(1, "{} volume (um^3)".format(ch_b_name))
+b_table.setColumnHeader(2, "{} sphericity".format(ch_b_name))
+b_regs = LabelRegions(b_labeling)
+j = 0
+for r in b_regs:
+    # create a sample of mask "B" data in "B" region
+    sample = Regions.sample(r, ch_b_mask)
+    # create a crop needed to create a mesh
+    crop = ops.op("transform.intervalView").input(
+            ch_b_mask,
+            r.minAsDoubleArray(),
+            r.maxAsDoubleArray()
+            ).apply()
+    mesh = ops.op("geom.marchingCubes").input(crop).apply()
+    b_table.appendRow()
+    b_table.set("{} size (pixels)".format(ch_b_name), j, ops.op("stats.size").input(sample).apply())
+    b_table.set("{} volume (um^3)".format(ch_b_name), j, ops.op("geom.size").input(mesh).apply().getRealFloat() * (x_cal * y_cal * z_cal))
+    b_table.set("{} sphericity".format(ch_b_name), j, ops.op("geom.sphericity").input(mesh).apply())
+    j += 1
+
+# display table and labeling
+ui.show(ab_labeling.getIndexImg())
+ui.show("{} results table".format(ch_a_name), ab_table)
+ui.show("{} results table".format(ch_b_name), b_table)

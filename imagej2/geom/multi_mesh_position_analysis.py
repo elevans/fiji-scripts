@@ -17,11 +17,11 @@ from net.imglib2.roi import Regions
 from net.imglib2.roi.labeling import LabelRegions
 from net.imglib2.type.logic import BitType
 from net.imglib2.type.numeric.real import FloatType
+from net.imglib2.view import Views
 
 from org.scijava.table import DefaultGenericTable
 
 from jarray import array
-
 
 def extract_channel(image, ch):
     """Extract a channel from the input image.
@@ -41,10 +41,9 @@ def extract_channel(image, ch):
         A view of the extracted channel.
     """
     # find C and Z axis indicies
-    c_idx = find_axis_index(image, "Channel")
-    z_idx = find_axis_index(image, "Z")
+    #c_idx = find_axis_index(image, "Channel")
 
-    return ops.op("transform.hyperSliceView").input(image, c_idx, ch - 1).apply()
+    return ops.op("transform.hyperSliceView").input(image, 2, ch - 1).apply()
 
 
 def extract_inside_mask(mask_a, mask_b):
@@ -127,9 +126,15 @@ def gaussian_subtraction(image, sigma):
 
     return out
 
+# crop the input data to a 450 x 450 patch
+min_arr = array([370, 136, 0, 0], "l")
+max_arr = array([819, 585, 2, 59], "l")
+img_crop = ops.op("transform.intervalView").input(img, min_arr, max_arr).apply()
+img_crop = Views.dropSingletonDimensions(img_crop)
+
 # extract channels
-ch_a_img = extract_channel(img, ch_a)
-ch_b_img = extract_channel(img, ch_b)
+ch_a_img = extract_channel(img_crop, ch_a)
+ch_b_img = extract_channel(img_crop, ch_b)
 
 # customize the following sections below for your own data
 # clean up channel "A" and create a mask
@@ -142,7 +147,6 @@ ch_a_mask = ops.op("morphology.open").input(ch_a_ths, HyperSphereShape(1), 4).ap
 ch_b_ths= ops.op("create.img").input(ch_b_img, BitType()).apply()
 ops.op("threshold.otsu").input(ch_b_img).output(ch_b_ths).compute()
 ch_b_mask = ops.op("morphology.open").input(ch_b_ths, HyperSphereShape(2), 4).apply()
-ch_b_mask = ops.op("morphology.fillHoles").input(ch_b_mask, HyperSphereShape(2)).apply()
 
 # extract mask "A" data from mask "B" region
 ch_ab_mask = extract_inside_mask(ch_a_mask, ch_b_mask)

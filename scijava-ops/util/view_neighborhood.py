@@ -1,7 +1,8 @@
 #@ OpEnvironment ops
+#@ String (visibility = MESSAGE, value = "<b>Radius based neighborhood shapes</b>", required = False) radius_msg
 #@ Integer (label = "Radius", value = 0) radius
-#@ String (label = "Neighborhood shape", choices = {"Diamond", "Hypersphere"}, style = "listBox") shape_type
 #@ Integer (label = "Dimensionality", min = 2, max = 3, value = 2) dims_length
+#@ Boolean (label = "chicken", value = False) show_diamond
 #@output Img output
 
 from net.imglib2 import FinalDimensions

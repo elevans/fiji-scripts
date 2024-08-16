@@ -3,12 +3,12 @@
 #@ String (visibility = MESSAGE, value = "<b>General settings</b>", required = false) general_msg
 #@ Integer (label = "Dimensionality", min = 2, max = 3, value = 2) ndim
 #@ String (visibility = MESSAGE, value = "<b>Radius based neighborhood shapes</b>", required = false) radius_msg
-#@ Integer (label = "Radius", value = 0) radius
+#@ Integer (label = "Radius", min = 1, value = 1) radius
 #@ Boolean (label = "Show diamond", value = false) show_diamond
 #@ Boolean (label = "Show diamond tips", value = false) show_diamond_tips
 #@ Boolean (label = "Show sphere", value = false) show_sphere
 #@ String (visibility = MESSAGE, value = "<b>Span based neighborhood shapes</b>", required = false ) span_msg
-#@ Integer (label = "Span", value = 0) span
+#@ Integer (label = "Span", min = 1, value = 1) span
 #@ String (label = "Center", choices = {"keep", "skip"}, style = "listBox") center
 #@ Boolean (label = "Show rectangle", value = false) show_rectangle
 

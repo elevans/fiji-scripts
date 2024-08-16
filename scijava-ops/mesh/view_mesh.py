@@ -3,9 +3,6 @@
 #@ Float (label = "Isolevel", style = "format:0.00", min = 1.0, value = 1.0) isolevel
 
 from net.imglib2.type.logic import BitType
-from net.imglib2.type.numeric.integer import ByteType
-from net.imglib2.type.numeric.integer import UnsignedShortType
-from net.imglib2.type.numeric.real import FloatType
 
 from org.scijava.vecmath import Point3f
 
@@ -31,17 +28,10 @@ def apply_isolevel(image, isolevel):
         Output ImgPlus of BitType at desired isolevel.
 
     """
-    # get the first element to determine how to convert isolevel value
-    fe = image.firstElement()
-    if isinstance(fe, ByteType):
-        val = ByteType(int(isolevel))
-    elif isinstance(fe, FloatType):
-        val = FloatType(isolevel)
-    elif isinstance(fe, UnsignedShortType):
-        val = UnsignedShortType(int(isolevel))
-    else:
-        val = None
-
+    if isolevel > 1.0:
+        isolevel -= 1
+    val = image.firstElement().copy()
+    val.setReal(isolevel)
     out = ops.op("create.img").input(image, BitType()).apply()
     ops.op("threshold.apply").input(image, val).output(out).compute()
     

@@ -26,7 +26,6 @@ def apply_isolevel(image, isolevel):
     :return:
 
         Output ImgPlus of BitType at desired isolevel.
-
     """
     if isolevel > 1.0:
         isolevel -= 1

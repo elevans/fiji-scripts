@@ -1,4 +1,5 @@
 #@ OpEnvironment ops
+#@ UIService ui
 #@ Img (label = "Input image:", autofill = false) img
 #@ Integer iterations(label = "Iterations", value = 15)
 #@ Float numericalAperture(label = "Numerical Aperture", style = "format:0.00", min = 0.00, value = 1.45)
@@ -9,7 +10,7 @@
 #@ Float axial_res(label = "Axial resolution (μm/pixel)", style = "format:0.0000", min = 0.0000, value = 0.1)
 #@ Float pZ(label="Particle/sample Position (μm)", style = "format:0.0000", min = 0.0000, value = 0)
 #@ Float regularizationFactor(label = "Regularization factor", style = "format:0.00000", min = 0.00000, value = 0.002)
-#@output Img psf
+#@ Boolean (label = "Show PSF", value = false) show_psf
 #@output Img result
 
 from net.imglib2 import FinalDimensions
@@ -43,3 +44,7 @@ psf = ops.op("create.kernelDiffraction").input(psf_size,
 
 # deconvolve image
 result = ops.op("deconvolve.richardsonLucyTV").input(img_float, psf, FloatType(), ComplexFloatType(), iterations, False, False, Float(regularizationFactor)).apply()
+
+# optionally show PSF
+if show_psf:
+    ui.show("PSF", psf)

@@ -1,5 +1,5 @@
 #@ IOService io
-#@ Img img
+#@ Img (label = "Input image:", autofill = false) img
 #@ String (label="Cellpose Python path:") cp_py_path 
 #@ String (label="Pretrained model:", choices={"cyto", "cyto2", "cyto2_cp3", "cyto3", "nuclei", "livecell_cp3", "deepbacs_cp3", "tissuenet_cp3", "bact_fluor_cp3", "bact_phase_cp3", "neurips_cellpose_default", "neurips_cellpose_transformer", "neurips_grayscale_cyto2", "transformer_cp3", "yeast_BF_cp3", "yeast_PhC_cp3"}, style="listBox") model
 #@ Float (label="Diameter (2D only):", style="format:0.00", value=0.00, stepSize=0.01) diameter

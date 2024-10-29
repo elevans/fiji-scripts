@@ -1,5 +1,5 @@
 #@ OpEnvironment ops
-#@ ImgPlus img
+#@ ImgPlus (label = "Input image:", autofill = false) img
 #@ Float (label = "Isolevel", style = "format:0.00", min = 1.0, value = 1.0) isolevel
 
 from net.imglib2.type.logic import BitType

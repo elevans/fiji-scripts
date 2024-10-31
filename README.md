@@ -9,7 +9,7 @@ To run a script in Fiji, open the _script editor_ with the `[` hotkey or
 **New** > **Script...** from the menu. Copy or open a script in the _script editor_
 and then click **Run** to execute the script.
 
-![script editor](doc/images/script_editor.png)
+![script editor](docs/images/script_editor.png)
 
 # Notes
 

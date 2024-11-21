@@ -13,7 +13,8 @@ Fiji Scripts
    :maxdepth: 3
    :caption: 📜 Scripts
 
-   filters/gaussian_subtraction
+   imagej_ops/imagej_ops_index
+   scijava_ops/scijava_ops_index
 
 Indices and tables
 ==================

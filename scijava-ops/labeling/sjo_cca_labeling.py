@@ -1,7 +1,7 @@
 #@ OpEnvironment ops
 #@ UIService ui
-#@ Img (label="Input image:", autofill=false) img
-#@ String (label="Structuring Element type:", choices={"FOUR", "EIGHT"}, style="listBox") strel_type
+#@ Img (label = "Input image:", autofill = false) img
+#@ String (label = "Structuring Element type:", choices = {"FOUR", "EIGHT"}, style = "listBox") strel_type
 #@output Img output
 
 from net.imglib2.algorithm.labeling.ConnectedComponents import StructuringElement

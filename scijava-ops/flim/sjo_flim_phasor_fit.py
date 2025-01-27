@@ -9,11 +9,41 @@
 #@ Boolean (label = "Show phasor map:", value = false) show_map
 #@ Boolean (label = "Show phasor plot:", value = false) show_plot
 #@ String (label = "Universal circle:", choices={"None", "Full", "Half"}, style="listBox", value = "None") uc_style
+#@ String (visibility = MESSAGE, value ="<b>[ Phasor coordinates CSV export settings ]</b>", required = false) exp_msg
+#@ Boolean (label = "Export coordinates:", value = false) export_coords
+#@ File (label = "Output directory:", style = "directory") out_dir
+#@ String (label = "Filename:") filename
 
+import os
 import math
+import csv
 from ij.gui import Plot
 from org.scijava.ops.flim import FitParams
 from java.awt import Color
+
+def coords_to_csv(u, v, path, name):
+    """Export the u and v coordinates to a .csv file.
+
+    :param u:
+        The 'u' coordinate (i.e. 'x' or 'g').
+
+    :param v:
+        The 'v' coordinate (i.e. 'y' or 'g').
+
+    :param path:
+        The path to save the file.
+
+    :param name:
+        The name of the file, without the .csv suffix.
+    """
+    f = os.path.join(path, name)
+    print(f)
+    with open(f, "w") as stream:
+        # write header
+        stream.write("G,S\n")
+        for g, s in zip(u, v):
+            # write data row by row
+            stream.write("{},{}\n".format(g, s))
 
 def extract_phasor_coordinates(img_u, img_v):
     """Extract the 'x' and 'y' phasor coordinates from Imgs.
@@ -46,7 +76,7 @@ def get_universal_circle(points=100, style="Full"):
     y = []
     for p in range(points):
         theta = p * ai
-        x.append(math.cos(theta) + 0.5)
+        x.append(math.cos(theta))
         y.append(math.sin(theta))
 
     return (x, y)
@@ -57,7 +87,7 @@ param.transMap = img # FLIM image
 param.ltAxis = lt_axis # lifetime axis index
 param.xInc = time_base / time_bins # time increment between two consecutive data points
 
-# run phasor analysis
+# run phasor analysis with FLIMLib
 phasor_results = ops.op("flim.fitPhasor").input(param).apply()
 
 # get phasor results as a 3D (X, Y, C) Img
@@ -73,7 +103,6 @@ phasor_img = phasor_results.paramMap
 img_u = ops.op("transform.hyperSliceView").input(phasor_img, 2, 1).apply()
 img_v = ops.op("transform.hyperSliceView").input(phasor_img, 2, 2).apply()
 phasor_coords = extract_phasor_coordinates(img_u, img_v)
-
 
 # outputs
 if show_map:
@@ -91,3 +120,11 @@ if show_plot:
         p.addPoints(uc[0], uc[1], Plot.CONNECTED_CIRCLES)
     p.draw()
     p.show()
+if export_coords:
+    # export g and s coords
+    coords_to_csv(
+            phasor_coords[0],
+            phasor_coords[1],
+            out_dir.getAbsolutePath(),
+            filename + ".csv"
+            )

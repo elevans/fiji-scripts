@@ -47,6 +47,19 @@ def coords_to_csv(u, v, path, name):
 
 def extract_phasor_coordinates(img_u, img_v):
     """Extract the 'x' and 'y' phasor coordinates from Imgs.
+
+    Use a cursor and random access to extract each pixel's value
+    (i.e. 'u' or 'v'). The random access is set to the cursor's
+    position, ensuring 'u' and 'v' are properly linked.
+
+    :param img_u:
+        The image containing 'u' values.
+
+    :param img_v:
+        The image containing 'v' values.
+
+    :return:
+        A tuple of lists containing paired 'u' and 'v' values.
     """
     # get a cursor and random access on the input data
     c = img_u.cursor()
@@ -63,7 +76,17 @@ def extract_phasor_coordinates(img_u, img_v):
 
 
 def get_universal_circle(points=100, style="Full"):
-    """
+    """Compute the points for a universal circle.
+
+    :param points:
+        The number of points to compute.
+
+    :param style:
+        Full or half circle.
+
+    :return:
+        A tuple of lists containing pair 'x' and 'y' coordinates
+        for the universal circle.
     """
     # calculate angle increment
     if style == "Full":

@@ -11,7 +11,7 @@
 #@ String (label = "Universal circle:", choices={"None", "Full", "Half"}, style="listBox", value = "None") uc_style
 #@ String (visibility = MESSAGE, value ="<b>[ Phasor coordinates CSV export settings ]</b>", required = false) exp_msg
 #@ Boolean (label = "Export coordinates:", value = false) export_coords
-#@ File (label = "Output directory:", style = "directory") out_dir
+#@ File (label = "Output directory:", style = "directory", required = false) out_dir
 #@ String (label = "Filename:") filename
 
 import os
@@ -101,6 +101,11 @@ def get_universal_circle(points=100, style="Full"):
         theta = p * ai
         x.append(math.cos(theta))
         y.append(math.sin(theta))
+
+    # complete the circle by adding the first position to the end
+    if style == "Full":
+        x.append(x[0])
+        y.append(y[1])
 
     return (x, y)
 

@@ -5,10 +5,11 @@
 #@ Integer (label = "Lifetime axis:", value = 2) lt_axis
 #@ Float (label = "Time base (ns)", min = 0, value = 12.5) time_base
 #@ Integer (label = "Time bins", min = 0, value = 256) time_bins
+#@ Integer (label = "Median filter Kernel size:", min = 0, value = 0) kernel_size
 #@ String (visibility = MESSAGE, value ="<b>[ Output settings ]</b>", required = false) out_msg
 #@ Boolean (label = "Show phasor map:", value = false) show_map
 #@ Boolean (label = "Show phasor plot:", value = false) show_plot
-#@ String (label = "Universal circle:", choices={"None", "Full", "Half"}, style="listBox", value = "None") uc_style
+#@ Boolean (label = "Draw universal half circle:", value = false) draw_uc
 #@ String (visibility = MESSAGE, value ="<b>[ Phasor coordinates CSV export settings ]</b>", required = false) exp_msg
 #@ Boolean (label = "Export coordinates:", value = false) export_coords
 #@ File (label = "Output directory:", style = "directory", required = false) out_dir
@@ -17,7 +18,10 @@
 import os
 import math
 import csv
+from math import cos, sin, pi
 from ij.gui import Plot
+from net.imglib2.algorithm.neighborhood import RectangleShape
+from net.imglib2.view import Views
 from org.scijava.ops.flim import FitParams
 from java.awt import Color
 
@@ -75,7 +79,7 @@ def extract_phasor_coordinates(img_u, img_v):
     return (u, v)
 
 
-def get_universal_circle(points=100, style="Full"):
+def get_universal_circle(points=100):
     """Compute the points for a universal circle.
 
     :param points:
@@ -88,30 +92,48 @@ def get_universal_circle(points=100, style="Full"):
         A tuple of lists containing pair 'x' and 'y' coordinates
         for the universal circle.
     """
-    # calculate angle increment
-    if style == "Full":
-        ai = 2 * math.pi / points
-    if style == "Half":
-        ai = math.pi / points
+    # universal circle parameters
+    radius = 0.5
+    center = (0.5, 0.0)
 
     # calculate points along the circle
     x = []
     y = []
-    for p in range(points):
-        theta = p * ai
-        x.append(math.cos(theta))
-        y.append(math.sin(theta))
-
-    # complete the circle by adding the first position to the end
-    if style == "Full":
-        x.append(x[0])
-        y.append(y[1])
+    for p in range(points + 1):
+        # angle from 0 to 2*pi
+        theta = pi * p / points
+        x.append(center[0] + radius * cos(theta))
+        y.append(center[1] + radius * sin(theta))
 
     return (x, y)
 
+
+def label_universal_circle(plot):
+    """Add decay labels to the universal circle.
+    """
+    # add fixed 0 ns and inf ns decay labels
+    plot.addText("0 ns", 1.0, 0.0)
+    plot.addText("inf ns", 0.0, 0.0)
+
+    # TODO: compute taus along the universal circle
+
+# apply median kernel filter to input image
+if kernel_size > 0:
+    shape = RectangleShape(kernel_size, False)
+    stack = []
+    for i in range(img.dimensionsAsLongArray()[2]):
+        view = ops.op("transform.hyperSliceView").input(img, 2, i).apply()
+        m_img = ops.op("create.img").input(view).apply()
+        ops.op("filter.median").input(view, shape).output(m_img).compute()
+        # add a channel dimension to median_imga
+        stack.append(ops.op("transform.addDimensionView").input(m_img, 1, 1).apply())
+    trans_map = Views.concatenate(2, stack)
+else:
+    trans_map = img
+
 # set FLIM parameter config
 param = FitParams()
-param.transMap = img # FLIM image
+param.transMap = trans_map # FLIM image
 param.ltAxis = lt_axis # lifetime axis index
 param.xInc = time_base / time_bins # time increment between two consecutive data points
 
@@ -142,10 +164,12 @@ if show_plot:
     p.setColor(Color.BLUE)
     p.addPoints(phasor_coords[0], phasor_coords[1], Plot.DOT)
     # optinally add universal circle
-    if uc_style != "None":
-        uc = get_universal_circle(style=uc_style)
+    if draw_uc:
+        uc = get_universal_circle()
         p.setColor(Color.BLACK)
         p.addPoints(uc[0], uc[1], Plot.CONNECTED_CIRCLES)
+    # add decay labels to the circle
+    label_universal_circle(p)
     p.draw()
     p.show()
 if export_coords:

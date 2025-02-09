@@ -1,4 +1,5 @@
 #@ OpEnvironment ops
+#@ PlotService ps
 #@ UIService ui
 #@ Img (label = "Input image:", autofill = false) img
 #@ String (visibility = MESSAGE, value ="<b>[ Phasor settings ]</b>", required = false) phs_msg
@@ -19,11 +20,11 @@ import os
 import math
 import csv
 from math import cos, sin, pi
-from ij.gui import Plot
 from net.imglib2.algorithm.neighborhood import RectangleShape
 from net.imglib2.view import Views
 from org.scijava.ops.flim import FitParams
-from java.awt import Color
+from org.scijava.plot import LineStyle, MarkerStyle
+from org.scijava.util import ColorRGB
 
 def coords_to_csv(u, v, path, name):
     """Export the u and v coordinates to a .csv file.
@@ -158,20 +159,39 @@ phasor_coords = extract_phasor_coordinates(img_u, img_v)
 if show_map:
     ui.show("Phasor output map", phasor_img)
 if show_plot:
-    # initialize the scatter plot
-    p = Plot("phasor plot", "g", "s")
-    # add data points
-    p.setColor(Color.BLUE)
-    p.addPoints(phasor_coords[0], phasor_coords[1], Plot.DOT)
-    # optinally add universal circle
+    # initialize a plot
+    plot = ps.newXYPlot()
+    plot.setTitle("FLIMLib Phasor plot")
+    plot.xAxis().setLabel("g")
+    plot.yAxis().setLabel("s")
+
+    # optionally add the universal circle
     if draw_uc:
-        uc = get_universal_circle()
-        p.setColor(Color.BLACK)
-        p.addPoints(uc[0], uc[1], Plot.CONNECTED_CIRCLES)
-    # add decay labels to the circle
-    label_universal_circle(p)
-    p.draw()
-    p.show()
+        uc_coords = get_universal_circle()
+        uc_series = plot.addXYSeries()
+        uc_series.setLabel("universal circle")
+        uc_series.setValues(uc_coords[0], uc_coords[1])
+        uc_style = ps.newSeriesStyle(
+                ColorRGB("black"),
+                LineStyle.DASH,
+                MarkerStyle.CIRCLE
+                )
+        uc_series.setStyle(uc_style)
+
+    # add data points
+    data_series = plot.addXYSeries()
+    data_series.setLabel("phasor data")
+    data_series.setValues(phasor_coords[0], phasor_coords[1])
+    data_style = ps.newSeriesStyle(
+            ColorRGB("blue"),
+            LineStyle.NONE,
+            MarkerStyle.NONE
+            )
+    data_series.setStyle(data_style)
+
+    # show the plot
+    ui.show(plot)
+
 if export_coords:
     # export g and s coords
     coords_to_csv(

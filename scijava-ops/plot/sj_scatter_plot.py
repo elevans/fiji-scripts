@@ -7,6 +7,8 @@ from org.scijava.util import ColorRGB
 # create plot
 plot = ps.newXYPlot()
 plot.setTitle("Test")
+plot.xAxis().setLabel("X")
+plot.yAxis().setLabel("Y")
 
 # add data to the plot
 x = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]

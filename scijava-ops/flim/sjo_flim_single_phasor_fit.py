@@ -185,7 +185,7 @@ if show_plot:
     data_style = ps.newSeriesStyle(
             ColorRGB("blue"),
             LineStyle.NONE,
-            MarkerStyle.NONE
+            MarkerStyle.PLUS
             )
     data_series.setStyle(data_style)
 

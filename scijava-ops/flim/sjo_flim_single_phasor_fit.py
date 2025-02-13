@@ -109,15 +109,6 @@ def get_universal_circle(points=100):
     return (x, y)
 
 
-def label_universal_circle(plot):
-    """Add decay labels to the universal circle.
-    """
-    # add fixed 0 ns and inf ns decay labels
-    plot.addText("0 ns", 1.0, 0.0)
-    plot.addText("inf ns", 0.0, 0.0)
-
-    # TODO: compute taus along the universal circle
-
 # apply median kernel filter to input image
 if kernel_size > 0:
     shape = RectangleShape(kernel_size, False)

@@ -14,7 +14,7 @@
 #@ String (visibility = MESSAGE, value ="<b>[ Phasor coordinates CSV export settings ]</b>", required = false) exp_msg
 #@ Boolean (label = "Export coordinates:", value = false) export_coords
 #@ File (label = "Output directory:", style = "directory", required = false) out_dir
-#@ String (label = "Filename:") filename
+#@ String (label = "Filename:", required = false) filename
 
 import os
 import math

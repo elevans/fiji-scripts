@@ -34,6 +34,7 @@ def insert_metadata(image, metadata_name, num_entries):
     metadata = imp_props.getProperty("Info")
     # create insert metadata dialog
     gd_ins = GenericDialog("Insert Metadata")
+    gd_ins.setOKLabel("Insert")
     # add key/value fields
     gd_ins.addMessage("Enter metadata key/value pairs:")
     for i in range(num_entries):

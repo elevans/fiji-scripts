@@ -47,4 +47,4 @@ result = ops.deconvolve().richardsonLucyTV(img, psf, iterations, regularizationF
 
 # optionally show the PSF
 if show_psf:
-    ui.show(psf)
+    ui.show("PSF", psf)

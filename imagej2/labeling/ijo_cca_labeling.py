@@ -1,4 +1,4 @@
-#@ OpEnvironment ops
+#@ OpService ops
 #@ Img (label = "Input binary image:", autofill = false) img
 #@ String (label = "Structuring Element type:", choices = {"FOUR", "EIGHT"}, style = "listBox") strel_type
 #@output Img label_image
@@ -11,5 +11,5 @@ if strel_type == "FOUR":
 else:
     strel = StructuringElement.EIGHT_CONNECTED
 
-labeling= ops.op("labeling.cca").input(img, strel).apply()
+labeling = ops.labeling().cca(img, strel)
 label_image = labeling.getIndexImg()

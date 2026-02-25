@@ -1,9 +1,11 @@
 #@ OpService ops
+#@ UIService ui
 #@ ConvertService cs
-#@ ImgPlus img
+#@ ImgPlus labels
 #@ String (visibility=MESSAGE, value="<html>Enter size range (labels within this range are retained):", required=false) msg
 #@ Integer min_size(label="Minimum size (pixels):", min=0, value=0)
 #@ Integer max_size(label="Maximum size (pixels):", value=0)
+#@output Img labels
 
 from net.imglib2.roi.labeling import ImgLabeling, LabelRegions
 from net.imglib2.roi import Regions
@@ -41,5 +43,5 @@ def filter_labeling(index_img, labeling, min_size, max_size):
             remove_label(sample)
 
 # convert index image to labeling
-labeling = cs.convert(img, ImgLabeling)
-filter_labeling(img, labeling, min_size ,max_size)
+labeling = cs.convert(labels, ImgLabeling)
+filter_labeling(labels, labeling, min_size, max_size)

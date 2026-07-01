@@ -18,8 +18,13 @@ import numpy as np
 arr = image.ndarray()
 ch_a = arr[0, :, :]
 ch_b = arr[1, :, :]
-z_score = coloc.saca_2d(ch_a, ch_b, ths.otsu_value(ch_a), ths.otsu_value(ch_b))
-share_as_ndarray(z_score)
+z_score = coloc.saca_2d(
+		ch_a,
+		ch_b,
+		ths.otsu_value(ch_a),
+		ths.otsu_value(ch_b))
+sig_mask = coloc.saca_significance_mask(z_score) * np.finfo(np.float64).max
+share_as_ndarray(np.stack([z_score, sig_mask], axis=0))
 """
 
 println("== BUILDING ENVIRONMENT ==")
